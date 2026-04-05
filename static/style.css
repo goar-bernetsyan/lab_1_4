@@ -1,0 +1,45 @@
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #f0e7d5;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+}
+h1 {
+    margin-bottom: 10px;
+}
+#dropArea {
+    border: 2px dashed #555;
+    padding: 20px;
+    margin: 20px auto;
+    width: 300px;
+    cursor: pointer;
+}
+#dropArea.dragover {
+    background: #eef;
+}
+#preview {
+    max-width: 400px;
+    margin-top: 20px;
+}
+button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 16px;
+}
+.loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #555;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: 20px auto;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+}
+#resultContainer {
+    margin-top: 20px;
+}
