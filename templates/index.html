@@ -1,1 +1,95 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <title>Обнаружение объектов YOLOv5</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<div class="container">
+    <h1>Обнаружение объектов с помощью YOLOv5</h1>
+    <p>Загрузите изображение, и модель выполнит детекцию объектов.</p>
 
+    <div class="upload-area" id="dropArea">
+        <input type="file" id="fileInput" accept="image/*" />
+        <p>Перетащите изображение сюда или выберите файл</p>
+    </div>
+
+    <img id="preview" src="#" alt="Предпросмотр" style="display:none;" />
+
+    <button id="detectBtn" disabled>Обнаружить</button>
+
+    <div id="loader" class="loader" style="display:none;"></div>
+
+    <div id="resultContainer" style="display:none;">
+        <h2>Результат</h2>
+        <img id="resultImg" src="#" alt="Обнаруженные объекты" />
+    </div>
+</div>
+
+<script>
+const fileInput = document.getElementById('fileInput');
+const dropArea = document.getElementById('dropArea');
+const preview = document.getElementById('preview');
+const detectBtn = document.getElementById('detectBtn');
+const loader = document.getElementById('loader');
+const resultContainer = document.getElementById('resultContainer');
+const resultImg = document.getElementById('resultImg');
+
+function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        preview.src = reader.result;
+        preview.style.display = 'block';
+        detectBtn.disabled = false;
+        resultContainer.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) handleFile(fileInput.files[0]);
+});
+
+dropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropArea.classList.add('dragover');
+});
+dropArea.addEventListener('dragleave', () => {
+    dropArea.classList.remove('dragover');
+});
+dropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+    if (e.dataTransfer.files[0]) {
+        fileInput.files = e.dataTransfer.files;
+        handleFile(e.dataTransfer.files[0]);
+    }
+});
+
+detectBtn.onclick = () => {
+    const file = fileInput.files[0];
+    if (!file) return alert("Выберите изображение");
+    const formData = new FormData();
+    formData.append('file', file);
+
+    loader.style.display = 'block';
+    detectBtn.disabled = true;
+    resultContainer.style.display = 'none';
+
+    fetch('/detect', { method: 'POST', body: formData })
+        .then(res => res.json())
+        .then(data => {
+            loader.style.display = 'none';
+            resultContainer.style.display = 'block';
+            document.getElementById('resultImg').src = data.result_image_url;
+        })
+        .catch(() => {
+            alert('Ошибка при обработке');
+            loader.style.display = 'none';
+            detectBtn.disabled = false;
+        });
+};
+</script>
+</body>
+</html>
